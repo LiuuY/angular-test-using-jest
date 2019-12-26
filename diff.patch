@@ -1,0 +1,142 @@
+diff --git package.json package.json
+index 26a7345..44ebd96 100644
+--- package.json
++++ package.json
+@@ -5,7 +5,7 @@
+     "ng": "ng",
+     "start": "ng serve",
+     "build": "ng build",
+-    "test": "ng test",
++    "test": "jest --watch",
+     "lint": "ng lint",
+     "e2e": "ng e2e"
+   },
+@@ -28,12 +28,16 @@
+     "@angular/cli": "~8.2.0",
+     "@angular/compiler-cli": "~8.2.0",
+     "@angular/language-service": "~8.2.0",
+-    "@types/node": "~8.9.4",
+     "@types/jasmine": "~3.3.8",
+     "@types/jasminewd2": "~2.0.3",
++    "@types/jest": "^24.0.24",
++    "@types/node": "~8.9.4",
+     "codelyzer": "^5.0.0",
+     "jasmine-core": "~3.4.0",
+     "jasmine-spec-reporter": "~4.2.1",
++    "jest": "^24.9.0",
++    "jest-environment-jsdom-fourteen": "^1.0.1",
++    "jest-preset-angular": "^8.0.0",
+     "karma": "~4.1.0",
+     "karma-chrome-launcher": "~2.2.0",
+     "karma-coverage-istanbul-reporter": "~2.0.1",
+diff --git src/app/app.component.spec.ts src/app/app.component.spec.ts
+index 090f458..f96c0eb 100644
+--- src/app/app.component.spec.ts
++++ src/app/app.component.spec.ts
+@@ -1,20 +1,16 @@
+-import { TestBed, async } from '@angular/core/testing';
+-import { RouterTestingModule } from '@angular/router/testing';
+-import { AppComponent } from './app.component';
++import { async, TestBed } from "@angular/core/testing";
++import { RouterTestingModule } from "@angular/router/testing";
++import { AppComponent } from "./app.component";
+
+-describe('AppComponent', () => {
++describe("AppComponent", () => {
+   beforeEach(async(() => {
+     TestBed.configureTestingModule({
+-      imports: [
+-        RouterTestingModule
+-      ],
+-      declarations: [
+-        AppComponent
+-      ],
++      imports: [RouterTestingModule],
++      declarations: [AppComponent]
+     }).compileComponents();
+   }));
+
+-  it('should create the app', () => {
++  it("should create the app", () => {
+     const fixture = TestBed.createComponent(AppComponent);
+     const app = fixture.debugElement.componentInstance;
+     expect(app).toBeTruthy();
+@@ -23,13 +19,21 @@ describe('AppComponent', () => {
+   it(`should have as title 'angular8-test-using-jest'`, () => {
+     const fixture = TestBed.createComponent(AppComponent);
+     const app = fixture.debugElement.componentInstance;
+-    expect(app.title).toEqual('angular8-test-using-jest');
++    expect(app.title).toEqual("angular8-test-using-jest");
+   });
+
+-  it('should render title in a h1 tag', () => {
++  it("should render title in a h1 tag", () => {
+     const fixture = TestBed.createComponent(AppComponent);
+     fixture.detectChanges();
+     const compiled = fixture.debugElement.nativeElement;
+-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to angular8-test-using-jest!');
++    expect(compiled.querySelector("h1").textContent).toContain(
++      "Welcome to angular8-test-using-jest!"
++    );
++  });
++
++  // some initialization code
++  test("renders markup to snapshot", () => {
++    const fixture = TestBed.createComponent(AppComponent);
++    expect(fixture).toMatchSnapshot();
+   });
+ });
+diff --git src/test.ts src/test.ts
+index 1631789..ef3a6fb 100644
+--- src/test.ts
++++ src/test.ts
+@@ -1,20 +1 @@
+-// This file is required by karma.conf.js and loads recursively all the .spec and framework files
+-
+-import 'zone.js/dist/zone-testing';
+-import { getTestBed } from '@angular/core/testing';
+-import {
+-  BrowserDynamicTestingModule,
+-  platformBrowserDynamicTesting
+-} from '@angular/platform-browser-dynamic/testing';
+-
+-declare const require: any;
+-
+-// First, initialize the Angular testing environment.
+-getTestBed().initTestEnvironment(
+-  BrowserDynamicTestingModule,
+-  platformBrowserDynamicTesting()
+-);
+-// Then we find all the tests.
+-const context = require.context('./', true, /\.spec\.ts$/);
+-// And load the modules.
+-context.keys().map(context);
++import "jest-preset-angular";
+diff --git tsconfig.spec.json tsconfig.spec.json
+index 6400fde..9ac9366 100644
+--- tsconfig.spec.json
++++ tsconfig.spec.json
+@@ -2,17 +2,11 @@
+   "extends": "./tsconfig.json",
+   "compilerOptions": {
+     "outDir": "./out-tsc/spec",
+-    "types": [
+-      "jasmine",
+-      "node"
+-    ]
++    "module": "commonjs",
++    "types": ["jest", "node"],
++    "esModuleInterop": true,
++    "emitDecoratorMetadata": true,
++    "allowJs": true
+   },
+-  "files": [
+-    "src/test.ts",
+-    "src/polyfills.ts"
+-  ],
+-  "include": [
+-    "src/**/*.spec.ts",
+-    "src/**/*.d.ts"
+-  ]
++  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+ }
